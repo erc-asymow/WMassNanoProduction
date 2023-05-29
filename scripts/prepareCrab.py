@@ -29,8 +29,13 @@ def nameFromInput(das_path, tagAndProbe=False):
         else: 
             label += "PostVFP"
     else:#for MC
-        # TODO: This doesn't actually work for data!
-        label += "PreVFP" if "APV" in das_path else "PostVFP"
+        if 'UL17' in das_path:
+            label += '2017'
+        elif 'UL18' in das_path:
+            label += '2018'
+        else:
+            # TODO: This doesn't actually work for data!
+            label += "PreVFP" if "APV" in das_path else "PostVFP"
 
     return label
 
