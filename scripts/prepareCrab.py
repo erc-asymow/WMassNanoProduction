@@ -102,7 +102,7 @@ def writeHistory(path, history_file, inputFile):
         f.write("Git diff of CMSSW is \n%s\n" % gitDiff(cmssw_dir))
         f.write("-"*80+"\n")
 
-def makeSubmitFiles(inputFile, nThreads, submit, doConfig, dryRun, match_expr, version):
+def makeSubmitFiles(inputFile, nThreads, submit, doConfig, dryRun, match_expr, version, storage):
     path = os.environ['CMSSW_BASE']+"/src/Configuration/WMassNanoProduction"
     if not os.path.isfile(inputFile):
         raise ValueError("Could not open file %s" % inputFile)
@@ -169,7 +169,7 @@ def makeSubmitFiles(inputFile, nThreads, submit, doConfig, dryRun, match_expr, v
                 "input" : das, "config" : config_name, "units" : units*args.nThreads,
                 "dbs" : "global" if len(das_split) == 1 else "phys03",
                 "useParent" : "False" if len(das_split) == 1 else "True",
-                "version" : version,
+                "version" : version, "outstorage" : storage
             })
         logging.info("Wrote config file %s" % "/".join(outfile.split("/")[-2:]))
         if submit[0] >= 1 and i % submit[0] == (submit[1]-1):
@@ -182,6 +182,7 @@ parser.add_argument('--makeConfig', action='store_true', help='run cmsDriver to 
 parser.add_argument('--tagAndProbe', action='store_true', help='Submit tag and probe nano')
 parser.add_argument('-i', '--inputFiles', required=True, type=str, nargs='*', help='inputFiles to process')
 parser.add_argument('-m', '--filterExpr', default='', type=str, help='Expression to filter out files from the input list')
+parser.add_argument('-t', '--storage', default='/store/group/cmst3/group/wmass/w-mass-13TeV/NanoAOD', type=str, help='Storage path of output Ntuples')
 parser.add_argument('-s', '--submit', type=int, nargs=2, help='Number of splits to make, which split to submit' \
         ' ex: 1 1 for all, 2 1 for every second file', default=(0,0))
 parser.add_argument('-j', '--nThreads', type=int, default=1, 
@@ -195,5 +196,5 @@ logging.basicConfig(level=logging.INFO)
 
 configsMade = []
 for i in args.inputFiles:
-    makeSubmitFiles(i, args.nThreads, args.submit, args.makeConfig, args.dryRun, args.filterExpr, args.version)
+    makeSubmitFiles(i, args.nThreads, args.submit, args.makeConfig, args.dryRun, args.filterExpr, args.version, args.storage)
 
