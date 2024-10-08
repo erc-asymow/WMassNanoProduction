@@ -2,13 +2,13 @@
 # using: 
 # Revision: 1.19 
 # Source: /local/reps/CMSSW/CMSSW/Configuration/Applications/python/ConfigBuilder.py,v 
-# with command line options: RECO --conditions 106X_upgrade2018_realistic_v16_L1v1 --datatier NANOAODSIM --eventcontent NANOAODSIM --era Run2_2018,run2_nanoAOD_106Xv2 --geometry DB:Extended --customise Configuration/DataProcessing/Utils.addMonitoring, PhysicsTools/NanoAOD/nanoTP_cff.customizeNANOTP, PhysicsTools/NanoAOD/nano_cff.customizeGenLeptonPrecision --filein dbs:/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/RunIISummer20UL18RECO-106X_upgrade2018_realistic_v11_L1v1-v2/AODSIM --fileout file:NanoV9MC2018TagAndProbe.root --nThreads 8 --no_exec --python_filename configs/NanoV9MC2018TagAndProbe_cfg.py --mc --scenario pp --step PAT,USERNANO:nanotpSequenceMC --runUnscheduled -n 1000
+# with command line options: RECO --conditions 106X_mc2017_realistic_v10 --datatier NANOAODSIM --eventcontent NANOAODSIM --era Run2_2017,run2_nanoAOD_106Xv2 --geometry DB:Extended --customise Configuration/DataProcessing/Utils.addMonitoring, PhysicsTools/NanoAOD/nanoTP_cff.customizeNANOTP, PhysicsTools/NanoAOD/nano_cff.customizeGenLeptonPrecision --filein dbs:/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/RunIISummer20UL17RECO-106X_mc2017_realistic_v6-v2/AODSIM --fileout file:NanoV9MC2017TagAndProbe.root --nThreads 8 --no_exec --python_filename configs/NanoV9MC2017TagAndProbe_cfg.py --mc --scenario pp --step PAT,USERNANO:nanotpSequenceMC --runUnscheduled -n 1000
 import FWCore.ParameterSet.Config as cms
 
-from Configuration.Eras.Era_Run2_2018_cff import Run2_2018
+from Configuration.Eras.Era_Run2_2017_cff import Run2_2017
 from Configuration.Eras.Modifier_run2_nanoAOD_106Xv2_cff import run2_nanoAOD_106Xv2
 
-process = cms.Process('USERNANO',Run2_2018,run2_nanoAOD_106Xv2)
+process = cms.Process('USERNANO',Run2_2017,run2_nanoAOD_106Xv2)
 
 # import of standard configurations
 process.load('Configuration.StandardSequences.Services_cff')
@@ -54,7 +54,7 @@ process.NANOAODSIMoutput = cms.OutputModule("NanoAODOutputModule",
         dataTier = cms.untracked.string('NANOAODSIM'),
         filterName = cms.untracked.string('')
     ),
-    fileName = cms.untracked.string('file:NanoV9MC2018TagAndProbe.root'),
+    fileName = cms.untracked.string('file:NanoV9MC2017TagAndProbe.root'),
     outputCommands = process.NANOAODSIMEventContent.outputCommands
 )
 
@@ -62,7 +62,7 @@ process.NANOAODSIMoutput = cms.OutputModule("NanoAODOutputModule",
 
 # Other statements
 from Configuration.AlCa.GlobalTag import GlobalTag
-process.GlobalTag = GlobalTag(process.GlobalTag, '106X_upgrade2018_realistic_v16_L1v1', '')
+process.GlobalTag = GlobalTag(process.GlobalTag, '106X_mc2017_realistic_v10', '')
 
 # Path and EndPath definitions
 process.Flag_trackingFailureFilter = cms.Path(process.goodVertices+process.trackingFailureFilter)
