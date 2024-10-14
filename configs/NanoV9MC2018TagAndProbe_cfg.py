@@ -30,7 +30,9 @@ process.maxEvents = cms.untracked.PSet(
 
 # Input source
 process.source = cms.Source("PoolSource",
-    fileNames = cms.untracked.vstring(),
+    fileNames = cms.untracked.vstring( (
+        '/store/mc/RunIISummer20UL18RECO/DYJetsToMuMu_H2ErratumFix_TuneCP5_13TeV-powhegMiNNLO-pythia8-photos/AODSIM/106X_upgrade2018_realistic_v11_L1v1-v3/2540000/00252764-1705-C24B-82E2-C45CDF65D592.root'
+    ) ),
     secondaryFileNames = cms.untracked.vstring()
 )
 
