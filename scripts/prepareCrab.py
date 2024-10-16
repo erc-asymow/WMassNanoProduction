@@ -145,6 +145,10 @@ def makeSubmitFiles(inputFile, nThreads, submit, doConfig, dryRun, match_expr, v
                 outname += "_TagAndProbe"
         else:
             outname += "_"+nameFromInput(das)
+            # check if it is extension samples, where we need to add the extension number to the label
+            matched = re.search("_ext(\d+)", das.split('/')[2])
+            if matched:
+                outname += matched.group(0)
             if len(das_split) > 1:
                 name += "WeightFix"
                 outname += "WeightFix"
@@ -186,8 +190,8 @@ parser.add_argument('-s', '--submit', type=int, nargs=2, help='Number of splits 
         ' ex: 1 1 for all, 2 1 for every second file', default=(0,0))
 parser.add_argument('-j', '--nThreads', type=int, default=1, 
     help="number of threads (make sure its consistent if you're not regenerating configs)")
-parser.add_argument('-p', '--storage', default='/store/group/cmst3/group/wmass/w-mass-13TeV/NanoAOD', type=str, help='Storage path of output Ntuples(default CERN storage)')
-parser.add_argument('-t', '--site', default='T2_CH_CERN', type=str, help='Site of the output storage(default:T2_CH_CERN)')
+parser.add_argument('--storage', default='/store/group/cmst3/group/wmass/w-mass-13TeV/NanoAOD', type=str, help='Storage path of output Ntuples(default CERN storage)')
+parser.add_argument('--site', default='T2_CH_CERN', type=str, help='Site of the output storage(default:T2_CH_CERN)')
 
 args = parser.parse_args()
 if args.submit[1] > args.submit[0] or (args.submit[1] == 0 and args.submit[1] != args.submit[0]):

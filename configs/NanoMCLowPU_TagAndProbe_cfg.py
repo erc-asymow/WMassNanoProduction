@@ -2,13 +2,12 @@
 # using: 
 # Revision: 1.19 
 # Source: /local/reps/CMSSW/CMSSW/Configuration/Applications/python/ConfigBuilder.py,v 
-# with command line options: RECO --conditions 106X_upgrade2018_realistic_v16_L1v1 --datatier NANOAODSIM --eventcontent NANOAODSIM --era Run2_2018,run2_nanoAOD_106Xv2 --geometry DB:Extended --customise Configuration/DataProcessing/Utils.addMonitoring, PhysicsTools/NanoAOD/nanoTP_cff.customizeNANOTP, PhysicsTools/NanoAOD/nano_cff.customizeGenLeptonPrecision --filein dbs:/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/RunIISummer20UL18RECO-106X_upgrade2018_realistic_v11_L1v1-v2/AODSIM --fileout file:NanoV9MC2018TagAndProbe.root --nThreads 8 --no_exec --python_filename configs/NanoV9MC2018TagAndProbe_cfg.py --mc --scenario pp --step PAT,USERNANO:nanotpSequenceMC --runUnscheduled -n 1000
 import FWCore.ParameterSet.Config as cms
 
-from Configuration.Eras.Era_Run2_2018_cff import Run2_2018
-from Configuration.Eras.Modifier_run2_nanoAOD_106Xv2_cff import run2_nanoAOD_106Xv2
+from Configuration.Eras.Era_Run2_2017_cff import Run2_2017
+from Configuration.Eras.Modifier_run2_nanoAOD_LowPU_cff import run2_nanoAOD_LowPU
 
-process = cms.Process('USERNANO',Run2_2018,run2_nanoAOD_106Xv2)
+process = cms.Process('NANO',Run2_2017,run2_nanoAOD_LowPU)
 
 # import of standard configurations
 process.load('Configuration.StandardSequences.Services_cff')
@@ -20,20 +19,20 @@ process.load('Configuration.StandardSequences.GeometryRecoDB_cff')
 process.load('Configuration.StandardSequences.MagneticField_cff')
 process.load('PhysicsTools.PatAlgos.slimming.metFilterPaths_cff')
 process.load('Configuration.StandardSequences.PATMC_cff')
-process.load('PhysicsTools.NanoAOD.customNano_cff')
+process.load('PhysicsTools.NanoAOD.nanoTP_cff')
 process.load('Configuration.StandardSequences.EndOfProcess_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(1000)
+    input = cms.untracked.int32(100)
 )
 
 # Input source
 process.source = cms.Source("PoolSource",
-    fileNames = cms.untracked.vstring( (
-        '/store/mc/RunIISummer20UL18RECO/DYJetsToMuMu_H2ErratumFix_TuneCP5_13TeV-powhegMiNNLO-pythia8-photos/AODSIM/106X_upgrade2018_realistic_v11_L1v1-v3/2540000/00252764-1705-C24B-82E2-C45CDF65D592.root'
-    ) ),
-    secondaryFileNames = cms.untracked.vstring()
+    fileNames = cms.untracked.vstring(
+        #'/store/mc/RunIIFall17MiniAODv2/DYJetsToMuMu_M-50_H2ErratumFix_TuneCP5_13TeV-powhegMiNNLO-pythia8-photos/MINIAODSIM/fixECALGT_LowPU_94X_mc2017_realistic_v10For2017H_v2-v1/2520000/020949C3-C038-ED11-A55E-D85ED3091D2B.root',
+        'file:/eos/uscms/store/user/yofeng/LowPU_AOD/DE1BF03F-BB0E-EC11-8B8E-001E67E33ECC.root'
+    )
 )
 
 process.options = cms.untracked.PSet(
@@ -53,18 +52,20 @@ process.NANOAODSIMoutput = cms.OutputModule("NanoAODOutputModule",
     compressionAlgorithm = cms.untracked.string('LZMA'),
     compressionLevel = cms.untracked.int32(9),
     dataset = cms.untracked.PSet(
-        dataTier = cms.untracked.string('NANOAODSIM'),
+        dataTier = cms.untracked.string('NANOAOD'),
         filterName = cms.untracked.string('')
     ),
-    fileName = cms.untracked.string('file:NanoV9MC2018TagAndProbe.root'),
+    fileName = cms.untracked.string('file:test.root'),
     outputCommands = process.NANOAODSIMEventContent.outputCommands
 )
 
 # Additional output definition
+#from PhysicsTools.NanoAOD.nanoTP_cff import customizeNANOTP_ELE_LowPU
+#process = customizeNANOTP_ELE_LowPU(process)
 
 # Other statements
 from Configuration.AlCa.GlobalTag import GlobalTag
-process.GlobalTag = GlobalTag(process.GlobalTag, '106X_upgrade2018_realistic_v16_L1v1', '')
+process.GlobalTag = GlobalTag(process.GlobalTag, '94X_mc2017_realistic_v14', '')
 
 # Path and EndPath definitions
 process.Flag_trackingFailureFilter = cms.Path(process.goodVertices+process.trackingFailureFilter)
@@ -113,31 +114,14 @@ process.options.numberOfConcurrentLuminosityBlocks=cms.untracked.uint32(1)
 
 # customisation of the process.
 
-# Automatic addition of the customisation function from Configuration.DataProcessing.Utils
-from Configuration.DataProcessing.Utils import addMonitoring 
-
-#call to customisation function addMonitoring imported from Configuration.DataProcessing.Utils
-process = addMonitoring(process)
-
-# Automatic addition of the customisation function from PhysicsTools.NanoAOD.nanoTP_cff
-from PhysicsTools.NanoAOD.nanoTP_cff import customizeNANOTP 
-
-#call to customisation function customizeNANOTP imported from PhysicsTools.NanoAOD.nanoTP_cff
-process = customizeNANOTP(process)
-
-# Automatic addition of the customisation function from PhysicsTools.NanoAOD.nano_cff
-from PhysicsTools.NanoAOD.nano_cff import customizeGenLeptonPrecision 
-
-#call to customisation function customizeGenLeptonPrecision imported from PhysicsTools.NanoAOD.nano_cff
-process = customizeGenLeptonPrecision(process)
-
+# Automatic addition of the customisation function from PhysicsTools.NanoAOD.nanotp_cff
+#call to customisation function customizenanotp imported from PhysicsTools.NanoAOD.nanotp_cff
 # End of customisation functions
 #do not add changes to your config after this point (unless you know what you are doing)
 from FWCore.ParameterSet.Utilities import convertToUnscheduled
 process=convertToUnscheduled(process)
 
 # customisation of the process.
-
 # Automatic addition of the customisation function from PhysicsTools.PatAlgos.slimming.miniAOD_tools
 from PhysicsTools.PatAlgos.slimming.miniAOD_tools import miniAOD_customizeAllMC 
 
@@ -145,8 +129,11 @@ from PhysicsTools.PatAlgos.slimming.miniAOD_tools import miniAOD_customizeAllMC
 process = miniAOD_customizeAllMC(process)
 
 # End of customisation functions
+from PhysicsTools.NanoAOD.nanoTP_cff import customizeNANOTP
+process = customizeNANOTP(process)
 
-# Customisation from command line
+from PhysicsTools.NanoAOD.nano_cff import customizeGenLeptonPrecision
+process = customizeGenLeptonPrecision(process)
 
 # Add early deletion of temporary data products to reduce peak memory need
 from Configuration.StandardSequences.earlyDeleteSettings_cff import customiseEarlyDelete
